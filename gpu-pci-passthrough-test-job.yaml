@@ -1,0 +1,48 @@
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gpu-test-job
+  namespace: default
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: gpu-test-job
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        accelerator: nvidia-gpu
+      containers:
+        - name: gpu-test
+          image: pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
+          command:
+            - python
+            - -c
+            - |
+              import torch
+              import time
+
+              assert torch.cuda.is_available(), "CUDA GPU unavailable"
+
+              torch.cuda.set_per_process_memory_fraction(
+                  0.025, 0
+              )
+
+              print("GPU:", torch.cuda.get_device_name(0))
+              print("Total GPU memory:",
+                    torch.cuda.get_device_properties(0).total_memory
+                    // (1024**2), "MiB")
+
+              # 작은 GPU 연산 테스트
+              a = torch.randn((1024, 1024), device="cuda")
+              b = torch.randn((1024, 1024), device="cuda")
+              c = torch.matmul(a, b)
+
+              torch.cuda.synchronize()
+              print("GPU test PASSED:", c.shape)
+              time.sleep(10)
+          resources:
+            limits:
+              nvidia.com/gpu: 1
