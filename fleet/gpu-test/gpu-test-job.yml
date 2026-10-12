@@ -11,17 +11,10 @@ spec:
         app: gpu-test-job
     spec:
       restartPolicy: Never
-      # nodeSelector 부분을 제거하거나 주석 처리합니다.
-      # nodeSelector:
-      #   accelerator: nvidia-a100
+      runtimeClassName: nvidia    # <-- 핵심: GPU Operator 런타임 클래스 지정
       containers:
         - name: gpu-test
           image: pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
-          env:
-            - name: NVIDIA_VISIBLE_DEVICES
-              value: "all"
-            - name: NVIDIA_DRIVER_CAPABILITIES
-              value: "compute,utility"
           command:
             - python
             - -c
