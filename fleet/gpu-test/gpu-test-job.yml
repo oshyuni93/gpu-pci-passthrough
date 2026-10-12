@@ -13,7 +13,7 @@ spec:
     spec:
       restartPolicy: Never
       nodeSelector:
-        accelerator: nvidia-gpu
+        accelerator: nvidia-a100
       containers:
         - name: gpu-test
           image: pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
