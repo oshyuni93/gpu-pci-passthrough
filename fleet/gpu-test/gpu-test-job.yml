@@ -17,6 +17,11 @@ spec:
       containers:
         - name: gpu-test
           image: pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "compute,utility"
           command:
             - python
             - -c
